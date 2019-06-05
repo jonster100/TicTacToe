@@ -10,8 +10,8 @@
 	echo "The winner is " . $engine->getWinner() . "</b>";*/
 	
 	//testing getting data from jquery2
-	$dataObject = json_decode($_POST['jsonData']);
-	echo $dataObject->xValue;
+	/*$dataObject = json_decode($_POST['jsonData']);
+	echo $dataObject->xValue;*/
 	
 	
 	//testing getting POST from JQuery form
