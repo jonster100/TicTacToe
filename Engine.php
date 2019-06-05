@@ -1,18 +1,25 @@
 <?php
+require "setupDatabase.php";
+
 class Engine {
+	private	$database;
 	private $boardArray;
 	private $currentPlayers;
 	private $win = false;
+	private $noMoves;
 	function __construct() {
+		$this->database = new Database();
 		$this->boardArray = array(array(),array(),array());
 		$this->currentPlayers = array("player1"=>"O","player2"=>"X");
 		$this->fillBoard();
+		$noMoves=0;
 	}
 	
 	public function setBoardPosition($bool,$xPos,$yPos){
 		if(($xPos>=0 && $xPos<=2) && ($yPos>=0 && $yPos<=2)){
 			$this->boardArray[$xPos][$yPos] = $this->currentPlayers[$bool];
 			echo "<p>" . $bool . " at position Xpos:" . $xPos . " Ypos:" . $yPos . " - Confirm = " . $this->boardArray[$xPos][$yPos] ."</p>";
+			$database->insertTableData($noMoves,$bool,$xPos,$yPoss);
 			$this->win=$this->checkWinningConidtion();
 		} else {
 			echo "Setting Board Position Out of Bounds." . $bool . " At position X:" . $xPos . " Y:" . $yPos . "</br>";
