@@ -1,17 +1,21 @@
 <?php
 class Database {
-	private $server = "127.0.0.1";
-	private $username = "root";//default for my localhost
-	private $password = "";//default for my localhost
-	private $databaseName = "tictactoeproject";
+	private $server;
+	private $username;
+	private $password;
+	private $databaseName; 
 	private $connection;
 
 	public function __construct(){
+		$this->server  = "127.0.0.1";
+		$this->username = "root";//default for my localhost
+		$this->password = "";//default for my localhost
+		$this->databaseName = "tictactoeproject";
 		$this->connection = new mysqli($this->server,$this->username,$this->password);
 		// Check connection
 		if ($this->connection->connect_error == true) {
 			die("Connection failed: " . $this->connection->connect_error);
-		} 
+		} else {
 			echo "Connected successfully</br>";
 		}
 		$this->setupDatabase();
@@ -24,14 +28,14 @@ class Database {
 			echo "Database created!</br>";
 		} else {
 			echo "Databse creation failed: " . $this->connection->error;
-			$this->$connection = new mysqli($this->server,$this->username,$this->password, $this->databaseName);
+			$this->connection = new mysqli($this->server,$this->username,$this->password, $this->databaseName);
 		}
 	}
 
 	private function setupTable(){
-		$this->$connection = new mysqli($this->server,$this->username,$this->password, $this->databaseName);
-		$createMovesTable = "CREATE TABLE Moves (MoveId int, PlayerId varchar(12), XPosition int, YPosition int)";
-		if ($connection->query($createMovesTable)) {
+		$this->connection = new mysqli($this->server,$this->username,$this->password, $this->databaseName);
+		$createMovesTable = "CREATE TABLE Moves (MoveId int, PlayerId varchar(255), XPosition int, YPosition int)";
+		if($this->connection->query($createMovesTable)) {
 			echo "Table created successfully!</br>";
 		} else {
 			echo "Error creating table: " . $this->connection->error;
@@ -39,7 +43,8 @@ class Database {
 	}
 	
 	public function insertTableData($move,$player,$xPos,$yPos){
-		$insetIntoTable = "INSERT INTO Moves (MoveId,PlayerId,XPosition,YPosition) VALUES ($move,$player,$xPos,$yPos)";
+		$temp = "hi";
+		$insetIntoTable = "INSERT INTO Moves (MoveId, PlayerId, XPosition, YPosition) VALUES ($move,'$player',$xPos,$yPos)";
 		if ($this->connection->query($insetIntoTable)) {
 			echo "Data inserte successfully!</br>";
 		} else {
