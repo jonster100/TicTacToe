@@ -43,7 +43,6 @@ class Database {
 	}
 	
 	public function insertTableData($move,$player,$xPos,$yPos){
-		$temp = "hi";
 		$insetIntoTable = "INSERT INTO Moves (MoveId, PlayerId, XPosition, YPosition) VALUES ($move,'$player',$xPos,$yPos)";
 		if ($this->connection->query($insetIntoTable)) {
 			echo "Data inserte successfully!</br>";
@@ -53,11 +52,25 @@ class Database {
 	}
 	
 	public function getTableData(){
-		
+		$newDataArray = array();
+		$getData = "SELECT MoveId,PlayerId,XPosition,YPosition FROM Moves";
+		$data = $this->connection->query($getData);
+		//echo "</br>" . $data->num_rows . "</br>";
+		if($data->num_rows!=0){
+			while($d = $data->fetch_assoc()){
+				//print_r($d);
+				array_push($newDataArray,$d);
+			}
+			echo "Loading Table Data!</br>";
+			//print_r($newDataArray);
+			return $newDataArray;
+		} else {
+			return null;
+		}
 	}
 
 	public function closeConnection(){
-		$connection = null;
+		$this->connection = null;
 	}
 }
 ?>

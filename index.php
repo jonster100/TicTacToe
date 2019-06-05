@@ -3,8 +3,12 @@
 	require "Engine.php";
 	$testing = true;
 	$engine = new Engine();
+	//get data sent from index.html
+	$dataObject = json_decode($_POST['jsonData']);
 	if($testing==true){
-		$engine->setBoardPosition("player1",0,0);
+		$engine->setBoardPosition($dataObject->playerId,$dataObject->xValue,$dataObject->yValue);
+		//testing winning condition
+		//$engine->setBoardPosition("player1",0,0);
 		//$engine->setBoardPosition("player1",0,1);
 		//$engine->setBoardPosition("player1",0,2);
 	}

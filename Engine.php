@@ -6,10 +6,12 @@ class Engine {
 	private $boardArray;
 	private $currentPlayers;
 	private $win = false;
-	private $noMoves;
+	private $orderedMoves;
 	function __construct() {
-		$this->noMoves=0;
 		$this->database = new Database();
+		$this->orderedMoves=$this->database->getTableData();
+		//print_r($this->orderedMoves);
+		//echo sizeOf($this->orderedMoves);
 		$this->boardArray = array(array(),array(),array());
 		$this->currentPlayers = array("player1"=>"O","player2"=>"X");
 		$this->fillBoard();
@@ -17,19 +19,45 @@ class Engine {
 	
 	public function setBoardPosition($bool,$xPos,$yPos){
 		if(($xPos>=0 && $xPos<=2) && ($yPos>=0 && $yPos<=2)){
-			$this->boardArray[$xPos][$yPos] = $this->currentPlayers[$bool];
-			echo "<p>" . $bool . " at position Xpos:" . $xPos . " Ypos:" . $yPos . " - Confirm = " . $this->boardArray[$xPos][$yPos] ."</p>";
-			$this->database->insertTableData($this->noMoves,$bool,$xPos,$yPos);
-			$this->win=$this->checkWinningConidtion();
+			if($this->checkIfPositionFilled($xPos,$yPos)==false){
+				$this->boardArray[$xPos][$yPos] = $this->currentPlayers[$bool];
+				//echo $this->currentPlayers[$bool];
+				$this->printBoard();
+				echo "<p>" . $bool . " at position Xpos:" . $xPos . " Ypos:" . $yPos . " - Confirm = " . $this->boardArray[$xPos][$yPos] ."</p>";
+				$this->database->insertTableData((is_null($this->orderedMoves))?0:end($this->orderedMoves)["MoveId"]+1,$bool,$xPos,$yPos);
+				$this->orderedMoves=$this->database->getTableData();
+				$this->win=$this->checkWinningConidtion();
+			} else {
+				echo "Position filled already try again!";
+			}
 		} else {
 			echo "Setting Board Position Out of Bounds." . $bool . " At position X:" . $xPos . " Y:" . $yPos . "</br>";
 		}
+	}
+	
+	private function checkIfPositionFilled($xPos,$yPos){
+		return ($this->boardArray[$xPos][$yPos]==null)?false:true;
 	}
 	
 	private function fillBoard(){
 		for($x=0;$x<3;$x++){
 			for($y=0;$y<3;$y++){
 				$this->boardArray[$x][$y]=null;
+			}
+		}
+		if(is_null($this->orderedMoves)==false){
+			echo "filling board";
+			for($i=0;$i<sizeOf($this->orderedMoves);$i++){
+				$this->boardArray[$this->orderedMoves[$i]["XPosition"]][$this->orderedMoves[$i]["YPosition"]] = $this->currentPlayers[$this->orderedMoves[$i]["PlayerId"]];
+			}
+		}
+	}
+	
+	private function printBoard(){
+		for($x=0;$x<3;$x++){
+			echo "</br>";
+			for($y=0;$y<3;$y++){
+				echo ($this->boardArray[$x][$y]=="O")?$this->boardArray[$x][$y]:($this->boardArray[$x][$y]=="X")?$this->boardArray[$x][$y]:"-";
 			}
 		}
 	}
