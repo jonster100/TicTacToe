@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>jQuery get() Demo</title>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $("button").click(function(){
+        // Get value from input element on the page
+		var object = {
+			xValue: $("#xNum").val(),
+			yValue: $("#yNum").val()
+		}
+		var stringObject = JSON.stringify(object);
+        // Send the input data to the server using get
+        $.post("index.php", {jsonData: stringObject} , function(data){
+            // Display the returned data in browser
+            $("#result").html(data);
+        });
+    });
+});
+</script>
+</head>
+<body>
+    <label>Enter a xPosition: <input type="text" id="xNum"></label>
+    <label>Enter a yPosition: <input type="text" id="yNum"></label>
+	<button type="button">Show Multiplication Table</button>
+    <div id="result"></div>
+</body>
+</html>

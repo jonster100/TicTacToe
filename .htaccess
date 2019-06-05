@@ -1,4 +1,4 @@
 RewriteEngine on
 
-RewriteRule ^index index.php
+
 AddType application/x-httpd-php .html .htm  
