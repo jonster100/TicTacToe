@@ -7,6 +7,8 @@
 	$dataObject = json_decode($_POST['jsonData']);
 	if($testing==true){
 		$engine->setBoardPosition($dataObject->playerId,$dataObject->xValue,$dataObject->yValue);
+		$engine->runRefLearn();
+		$engine->printBoard();
 		//testing winning condition
 		//$engine->setBoardPosition("player1",0,0);
 		//$engine->setBoardPosition("player1",0,1);

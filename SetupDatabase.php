@@ -19,7 +19,8 @@ class Database {
 			echo "Connected successfully</br>";
 		}
 		$this->setupDatabase();
-		$this->setupTable();
+		$this->setupCurrentMovesTable();
+		$this->setupRefLearnTable();
 	}
 
 	private function setupDatabase(){
@@ -32,9 +33,9 @@ class Database {
 		}
 	}
 
-	private function setupTable(){
+	private function setupCurrentMovesTable(){
 		$this->connection = new mysqli($this->server,$this->username,$this->password, $this->databaseName);
-		$createMovesTable = "CREATE TABLE Moves (MoveId int, PlayerId varchar(255), XPosition int, YPosition int)";
+		$createMovesTable = "CREATE TABLE CurrentMoves (MoveId int, PlayerId varchar(255), XPosition int, YPosition int)";
 		if($this->connection->query($createMovesTable)) {
 			echo "Table created successfully!</br>";
 		} else {
@@ -42,8 +43,27 @@ class Database {
 		}	
 	}
 	
-	public function insertTableData($move,$player,$xPos,$yPos){
-		$insetIntoTable = "INSERT INTO Moves (MoveId, PlayerId, XPosition, YPosition) VALUES ($move,'$player',$xPos,$yPos)";
+	private function setupRefLearnTable(){
+		$this->connection = new mysqli($this->server,$this->username,$this->password, $this->databaseName);
+		$createMovesTable = "CREATE TABLE RefLearnMoves (MoveId int, PlayerId varchar(255), XPosition int, YPosition int, MoveOutcome smallint)";
+		if($this->connection->query($createMovesTable)) {
+			echo "Table created successfully!</br>";
+		} else {
+			echo "Error creating table: " . $this->connection->error;
+		}	
+	}
+	
+	public function insertCurrentMoveData($move,$player,$xPos,$yPos){
+		$insetIntoTable = "INSERT INTO CurrentMoves (MoveId, PlayerId, XPosition, YPosition) VALUES ($move,'$player',$xPos,$yPos)";
+		if ($this->connection->query($insetIntoTable)) {
+			echo "Data inserte successfully!</br>";
+		} else {
+			echo "Error inserting data: " . $this->connection->error;
+		}	
+	}
+	
+	public function insertRefLearnData($move,$player,$xPos,$yPos, $moveO){
+		$insetIntoTable = "INSERT INTO RefLearnMoves (MoveId, PlayerId, XPosition, YPosition, MoveOutcome) VALUES ($move,'$player',$xPos,$yPos,$moveO)";
 		if ($this->connection->query($insetIntoTable)) {
 			echo "Data inserte successfully!</br>";
 		} else {
@@ -53,7 +73,7 @@ class Database {
 	
 	public function getTableData(){
 		$newDataArray = array();
-		$getData = "SELECT MoveId,PlayerId,XPosition,YPosition FROM Moves";
+		$getData = "SELECT MoveId,PlayerId,XPosition,YPosition FROM CurrentMoves";
 		$data = $this->connection->query($getData);
 		//echo "</br>" . $data->num_rows . "</br>";
 		if($data->num_rows!=0){
