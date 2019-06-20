@@ -32,10 +32,10 @@ class Engine {
 				if($this->win!=false){
 					$this->updateRefLearn(false);
 				}
-				//return true;
+				return true;
 			} else {
 				echo "Position filled already try again!";
-				//return false;
+				return false;
 			}
 		} else {
 			echo "Setting Board Position Out of Bounds." . $bool . " At position X:" . $xPos . " Y:" . $yPos . "</br>";
@@ -43,11 +43,11 @@ class Engine {
 	}
 
 	public function runRefLearn(){
-		/*$bool = false;
-		while(($bool!=true)&&($this->win!=true)){*/
+		$bool = false;
+		while(($bool!=true)&&($this->win!=true)){
 			$tempMove = $this->refLearn->move($this->boardArray);
 			$bool = $this->setBoardPosition("player2",$tempMove[0],$tempMove[1]);
-		//}
+		}
 	}
 	
 	private function checkIfPositionFilled($xPos,$yPos){
