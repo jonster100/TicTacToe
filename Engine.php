@@ -10,8 +10,8 @@ class Engine {
 	private $refLearn;//player2 is the RefLearnEngine
 	function __construct() {
 		$this->database = new Database();
-		$this->orderedMoves=$this->database->getTableData();
-		$this->refLearn = new RefLearnEngine();
+		$this->orderedMoves=$this->database->getTableData(false);
+		$this->refLearn = new RefLearnEngine($this->database->getTableData(true));
 		//print_r($this->orderedMoves);
 		//echo sizeOf($this->orderedMoves);
 		$this->boardArray = array(array(),array(),array());
@@ -21,21 +21,21 @@ class Engine {
 	
 	public function setBoardPosition($bool,$xPos,$yPos){
 		if(($xPos>=0 && $xPos<=2) && ($yPos>=0 && $yPos<=2)){
-			if($this->checkIfPositionFilled($xPos,$yPos)==false){
+			if(is_null($this->boardArray[$xPos][$yPos])==true){
 				$this->boardArray[$xPos][$yPos] = $this->currentPlayers[$bool];
 				//echo $this->currentPlayers[$bool];
 				//$this->printBoard();
 				echo "<p>" . $bool . " at position Xpos:" . $xPos . " Ypos:" . $yPos . " - Confirm = " . $this->boardArray[$xPos][$yPos] ."</p>";
 				$this->database->insertCurrentMoveData((is_null($this->orderedMoves))?0:end($this->orderedMoves)["MoveId"]+1,$bool,$xPos,$yPos);
-				$this->orderedMoves=$this->database->getTableData();
+				$this->orderedMoves=$this->database->getTableData(false);
 				$this->win=$this->checkWinningConidtion();
 				if($this->win!=false){
 					$this->updateRefLearn(false);
 				}
-				return true;
+				//return true;
 			} else {
 				echo "Position filled already try again!";
-				return false;
+				//return false;
 			}
 		} else {
 			echo "Setting Board Position Out of Bounds." . $bool . " At position X:" . $xPos . " Y:" . $yPos . "</br>";
@@ -43,10 +43,11 @@ class Engine {
 	}
 
 	public function runRefLearn(){
-		$bool = false;
-		while(($bool!=true)&&($this->win!=true)){
-			$bool = $this->setBoardPosition("player2",$this->refLearn->move(),$this->refLearn->move());
-		}
+		/*$bool = false;
+		while(($bool!=true)&&($this->win!=true)){*/
+			$tempMove = $this->refLearn->move($this->boardArray);
+			$bool = $this->setBoardPosition("player2",$tempMove[0],$tempMove[1]);
+		//}
 	}
 	
 	private function checkIfPositionFilled($xPos,$yPos){
@@ -80,9 +81,9 @@ class Engine {
 		if($draw==false){
 			for($i=0;$i<sizeOf($this->orderedMoves);$i++){
 				if($this->currentPlayers[$this->orderedMoves[$i]["PlayerId"]]==$this->win){
-					$this->database->insertRefLearnData($this->orderedMoves[$i]["MoveId"],$this->orderedMoves[$i]["PlayerId"],$this->orderedMoves[$i]["XPosition"],$this->orderedMoves[$i]["YPosition"],1);
+					$this->database->insertRefLearnData($this->refLearn->getInstanceId(),$this->orderedMoves[$i]["PlayerId"],$this->orderedMoves[$i]["XPosition"],$this->orderedMoves[$i]["YPosition"],1);
 				} else {
-					$this->database->insertRefLearnData($this->orderedMoves[$i]["MoveId"],$this->orderedMoves[$i]["PlayerId"],$this->orderedMoves[$i]["XPosition"],$this->orderedMoves[$i]["YPosition"],-1);
+					$this->database->insertRefLearnData($this->refLearn->getInstanceId(),$this->orderedMoves[$i]["PlayerId"],$this->orderedMoves[$i]["XPosition"],$this->orderedMoves[$i]["YPosition"],-1);
 				}
 			}
 		} else {
@@ -90,6 +91,7 @@ class Engine {
 				$this->database->insertRefLearnData($this->orderedMoves[$i]["MoveId"],$this->orderedMoves[$i]["PlayerId"],$this->orderedMoves[$i]["XPosition"],$this->orderedMoves[$i]["YPosition"],0);
 			}
 		}
+		$this->database->delCurrentMoves();
 	}
 	
 	private function checkWinningConidtion(){
@@ -103,7 +105,6 @@ class Engine {
 				$currentWinLength=0;
 			}
 			if($currentWinLength==3){
-				$this->updateRefLearn(false);
 				return $this->boardArray[0][$x];
 			}
 		}

@@ -71,9 +71,9 @@ class Database {
 		}	
 	}
 	
-	public function getTableData(){
+	public function getTableData($getRefLearnData){
 		$newDataArray = array();
-		$getData = "SELECT MoveId,PlayerId,XPosition,YPosition FROM CurrentMoves";
+		$getData = ($getRefLearnData==false)?"SELECT MoveId,PlayerId,XPosition,YPosition FROM CurrentMoves":"SELECT MoveId,PlayerId,XPosition,YPosition,MoveOutcome FROM RefLearnMoves";
 		$data = $this->connection->query($getData);
 		//echo "</br>" . $data->num_rows . "</br>";
 		if($data->num_rows!=0){
@@ -87,6 +87,11 @@ class Database {
 		} else {
 			return null;
 		}
+	}
+	
+	public function delCurrentMoves(){
+		$del = "DELETE FROM currentMoves";
+		$this->connection->query($del);
 	}
 
 	public function closeConnection(){

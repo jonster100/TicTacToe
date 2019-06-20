@@ -6,7 +6,7 @@
 	//get data sent from index.html
 	$dataObject = json_decode($_POST['jsonData']);
 	if($testing==true){
-		$engine->setBoardPosition($dataObject->playerId,$dataObject->xValue,$dataObject->yValue);
+		$engine->setBoardPosition("player1"/*$dataObject->playerId*/,$dataObject->xValue,$dataObject->yValue);
 		$engine->runRefLearn();
 		$engine->printBoard();
 		//testing winning condition
