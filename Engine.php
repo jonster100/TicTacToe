@@ -48,6 +48,10 @@ class Engine {
 			$tempMove = $this->refLearn->move($this->boardArray);
 			$bool = $this->setBoardPosition("player2",$tempMove[0],$tempMove[1]);
 		}
+		$this->win=$this->checkWinningConidtion();
+		if($this->win!=false){
+			$this->updateRefLearn(false);
+		}
 	}
 	
 	private function checkIfPositionFilled($xPos,$yPos){
